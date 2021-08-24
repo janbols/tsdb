@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/solarized.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Timeseries db</h1>
+					<h3>By ...</h3>
+						<ul>
+							<li>Christofe</li>
+							<li>Jan</li>
+						</ul>
+
+				</section>
+				<section>
+					<h2>What is time-series data?</h2>
+					<blockquote>data that collectively represents how a system, process, or behavior changes over time.</blockquote>
+				</section>
+				<section>
+					<h2>Characterstics</h2>
+					<ul>
+						<li>Time-centric</li>
+						<li>Append only</li>
+						<li>Recent</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Examples</h2>
+					<img src="assets/timeseriesdbs.png">
+				</section>
+				<section>
+					<h2>TimescaleDB</h2>
+					<ul>
+						<li>Postgres Extension</li>
+						<li>Hypertables</li>
+						<li>Realtime aggregations</li>
+						<li>Data retention</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Hypertables & Chunks</h2>
+					<img src="assets/hypertable.png">
+				</section>
+				<section>
+					<h2>Hypertables & Chunks</h2>
+					<ul>
+						<li>LRU chunk in memory</li>
+						<li>Local indexes</li>
+						<li>Data retention</li>
+						<li>Age based compression (row -> column optimized)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Wide Data model</h2>
+					<pre><code data-trim data-noescape>
+						1. {name:  cpu_1m_avg,  free_mem,  temperature,  device_id: abc123,  location_id: 335,  dev_type: field}
+						2. {name:  cpu_1m_avg,  free_mem,  temperature,  device_id: def456,  location_id: 335,  dev_type: roof}
+						3. {name:  cpu_1m_avg,  free_mem,  temperature,  device_id: ghi789,  location_id:  77,  dev_type: roof}
+					</code></pre>
+				</section>
+				<section>
+					<h2>Narrow Data model</h2>
+					<pre><code data-trim data-noescape>
+						1. {name:  cpu_1m_avg,  device_id: abc123,  location_id: 335,  dev_type: field}
+						2. {name:  cpu_1m_avg,  device_id: def456,  location_id: 335,  dev_type: roof}
+						3. {name:  cpu_1m_avg,  device_id: ghi789,  location_id:  77,  dev_type: roof}
+						4. {name:    free_mem,  device_id: abc123,  location_id: 335,  dev_type: field}
+						5. {name:    free_mem,  device_id: def456,  location_id: 335,  dev_type: roof}
+						6. {name:    free_mem,  device_id: ghi789,  location_id:  77,  dev_type: roof}
+						7. {name: temperature,  device_id: abc123,  location_id: 335,  dev_type: field}
+						8. {name: temperature,  device_id: def456,  location_id: 335,  dev_type: roof}
+						9. {name: temperature,  device_id: ghi789,  location_id:  77,  dev_type: roof}
+					</code></pre>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
