@@ -1,84 +1,93 @@
-## Setup IoT Sensor data
+# Setup data
+
+Download data at https://timescaledata.blob.core.windows.net/datasets/nyc_data.tar.gz and place it in ./nyc.
+Extract the tar file in ./nyc
+
+    docker-compose down -v --remove-orphans
+    docker-compose up -d tsdb
+    sleep 5
+    docker-compose exec -T tsdb psql -U postgres < sql/nyc_data.sql
+    echo '\COPY rides FROM /nyc_data/nyc_data_rides.csv CSV;' | docker-compose exec -T tsdb psql -U postgres
+    docker-compose exec -T tsdb psql -U postgres < sql/nyc_geom.sql
+    docker-compose exec -T tsdb psql -U postgres < sql/schema_iot.sql
+
+Create grafana datasource and dashboards
+
+    docker-compose stop
+    docker-compose run --rm tsdb-backup
+    docker-compose run --rm grafana-backup
+
+## Backup / restore:
+
+    docker-compose run --rm tsdb-backup
+    docker-compose run --rm grafana-backup
+
+    docker-compose run --rm tsdb-restore
+    docker-compose run --rm grafana-restore
+
+# Run
+
+    docker-compose run --rm tsdb-restore
+    docker-compose run --rm grafana-restore
+
+    docker-compose up -d tsdb grafana
+    docker-compose exec tsdb psql -U postgres
+
+## IoT Sensor data
+
 Follow steps on https://docs.timescale.com/timescaledb/latest/tutorials/simulate-iot-sensor-data/
 
-    docker run -d --name iot \
-    -p 5432:5432 \
-    -e POSTGRES_PASSWORD=password \
-    timescale/timescaledb:2.4.1-pg13
-
-    docker exec -i iot psql -U postgres < schema_iot.sql
-    docker exec -ti iot psql -U postgres
-
-## Setup Crypto
-Create a docker image with prepared database containing the relevant data:
-
-    sudo rm -rf ./crypto
-    sudo rm -f nfl.docker
-    docker run -d --name timescaledb \
-        -p 5432:5432 \
-        -e POSTGRES_PASSWORD=password \
-        -e PGDATA=/var/lib/postgresql/data/pgdata \
-        -v $PWD/db:/var/lib/postgresql/data \
-        timescale/timescaledb-ha:pg13-ts2.4-latest
-    
-    docker exec -i timescaledb psql -U postgres < schema_nfl.sql
-
-    pip install psycopg2-binary
-    python3 ingest.py
-    docker rm -f timescaledb
-    sudo chmod a+r -R  db
-    sudo docker build -t summerschool/tsdb/nfl .
-
-    #sudo docker save -o nfl.docker summerschool/tsdb/nfl
+## New York Cab data
+Follow steps in https://docs.timescale.com/timescaledb/latest/tutorials/nyc-taxi-cab/#mission-2-analysis
 
 
-## RUN
-
-    docker run -d --name nfl \
-        -p 5432:5432 \
-        -e POSTGRES_PASSWORD=password \
-        summerschool/tsdb/nfl
-    
-
-    docker exec -it nfl psql -U postgres
-
-Following instructions on https://docs.timescale.com/timescaledb/latest/tutorials/nfl-analytics/ingest-and-query/##run-your-first-query
+Without unnecessary geo transformation:
 
 
-## Setup NFL
 
-Follow steps on https://docs.timescale.com/timescaledb/latest/tutorials/nfl-analytics/ingest-and-query/ for getting sample data and unzip the files in the `data` dir.
-
-Create a docker image with prepared database containing the relevant data:
-
-    sudo rm -rf ./db
-    sudo rm -f nfl.docker
-    docker run -d --name timescaledb \
-        -p 5432:5432 \
-        -e POSTGRES_PASSWORD=password \
-        -e PGDATA=/var/lib/postgresql/data/pgdata \
-        -v $PWD/db:/var/lib/postgresql/data \
-        timescale/timescaledb-ha:pg13-ts2.4-latest
-    
-    docker exec -i timescaledb psql -U postgres < schema_nfl.sql
-
-    pip install psycopg2-binary
-    python3 ingest.py
-    docker rm -f timescaledb
-    sudo chmod a+r -R  db
-    sudo docker build -t summerschool/tsdb/nfl .
-
-    #sudo docker save -o nfl.docker summerschool/tsdb/nfl
+    -- How many taxis pick up rides within 400m of Times Square on New Years Day, grouped by 30 minute buckets.
+    -- Number of rides on New Years Day originating within 400m of Times Square, by 30 min buckets
+    -- Note: Times Square is at (lat, long) (40.7589,-73.9851)
+    SELECT time_bucket('30 minutes', pickup_datetime) AS thirty_min, COUNT(*) AS near_times_sq
+    FROM rides
+    WHERE ST_Distance(pickup_geom, ST_SetSRID(ST_MakePoint(-73.9851,40.7589),4326)) < 400
+    AND pickup_datetime < '2016-01-01 14:00'
+    GROUP BY thirty_min ORDER BY thirty_min;
 
 
-## RUN 
 
-    docker run -d --name nfl \
-        -p 5432:5432 \
-        -e POSTGRES_PASSWORD=password \
-        summerschool/tsdb/nfl
-    
+    SELECT time_bucket('5m', rides.pickup_datetime) AS time,
+    rides.trip_distance AS value,
+    rides.pickup_latitude AS latitude,
+    rides.pickup_longitude AS longitude
+    FROM rides
+    WHERE 
+    ST_Distance(pickup_geom,
+    ST_SetSRID(ST_MakePoint(-73.9851,40.7589),4326)
+    ) < 2000
+    GROUP BY time,
+    rides.trip_distance,
+    rides.pickup_latitude,
+    rides.pickup_longitude
+    ORDER BY time
+    LIMIT 500;
 
-    docker exec -it nfl psql -U postgres
 
-Following instructions on https://docs.timescale.com/timescaledb/latest/tutorials/nfl-analytics/ingest-and-query/##run-your-first-query
+    SELECT time_bucket('5m', rides.pickup_datetime) AS time,
+       rides.trip_distance AS value,
+       rides.pickup_latitude AS latitude,
+       rides.pickup_longitude AS longitude
+    FROM rides
+    WHERE $__timeFilter(rides.pickup_datetime) AND
+    ST_Distance(pickup_geom,
+    ST_SetSRID(ST_MakePoint(-73.9851,40.7589),4326)
+    ) < 2000
+    GROUP BY time,
+    rides.trip_distance,
+    rides.pickup_latitude,
+    rides.pickup_longitude
+    ORDER BY time
+    LIMIT 500;
+
+
+

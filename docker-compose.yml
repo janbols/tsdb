@@ -1,0 +1,67 @@
+version: "3.2"
+
+services:
+  tsdb:
+    image: timescale/timescaledb:2.4.1-pg13-bitnami
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRESQL_PASSWORD=password
+      - PGPASSWORD=password
+      - POSTGRESQL_SHARED_PRELOAD_LIBRARIES=pgaudit,timescaledb
+    volumes:
+      - tsdb:/bitnami/postgresql
+      - $PWD/nyc/nyc_data:/nyc_data
+
+  grafana:
+    image: grafana/grafana:8.1.3
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana:/var/lib/grafana
+
+  grafana-backup:
+    image: alpine
+    tty: false
+    environment:
+      - TARGET=grafana
+    volumes:
+      - ./backup:/backup
+      - grafana:/volume
+    command: sh -c "tar -czf /backup/$${TARGET}.tar.gz -C /volume ./"
+
+  grafana-restore:
+    image: alpine
+    environment:
+      - SOURCE=grafana
+    volumes:
+      - ./backup:/backup
+      - grafana:/volume
+    command: sh -c "rm -rf /volume/* /volume/..?* /volume/.[!.]* ; tar -C /volume/ -xzf /backup/$${SOURCE}.tar.gz"
+
+  tsdb-backup:
+    image: alpine
+    tty: false
+    environment:
+      - TARGET=tsdb
+    volumes:
+      - ./backup:/backup
+      - tsdb:/volume
+    command: sh -c "tar -czf /backup/$${TARGET}.tar.gz -C /volume ./"
+
+  tsdb-restore:
+    image: alpine
+    environment:
+      - SOURCE=tsdb
+    volumes:
+      - ./backup:/backup
+      - tsdb:/volume
+    command: sh -c "rm -rf /volume/* /volume/..?* /volume/.[!.]* ; tar -C /volume/ -xzf /backup/$${SOURCE}.tar.gz"
+
+
+volumes:
+  grafana:
+  tsdb:
+
+
+
