@@ -1,4 +1,6 @@
-# Setup data
+# Setup volumes
+
+In this part, the data is loaded into the db. The data is loaded in a directory mapped as a docker volume. Later the backup is taken of each volume and stored in a central accessible location. 
 
 Download data at https://timescaledata.blob.core.windows.net/datasets/nyc_data.tar.gz and place it in ./nyc.
 Extract the tar file in ./nyc
@@ -26,6 +28,11 @@ Create grafana datasource and dashboards
     docker-compose run --rm grafana-restore
 
 # Run
+
+Download data backup data from https://transfer-vinci-energies.netexplorer.pro/fdl/uGHmJIaNIPsofDCkSeo8I7LhfcDRkj and store it in ./backup.
+    
+    wget https://transfer-vinci-energies.netexplorer.pro/fdl/b4qZSBXZFz6DivVmk4wm2SHRgW1HEF -O backup/grafana.tar.gz
+    wget https://transfer-vinci-energies.netexplorer.pro/fdl/J0ACLfRLqVujNFMoXSq9UB6oEk_hmN -O backup/tsdb.tar.gz
 
     docker-compose run --rm tsdb-restore
     docker-compose run --rm grafana-restore
