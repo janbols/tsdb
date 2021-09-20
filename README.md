@@ -13,6 +13,7 @@ Extract the tar file in ./nyc
     docker-compose exec -T tsdb psql -U postgres < sql/nyc_geom.sql
     docker-compose exec -T tsdb psql -U postgres < sql/schema_iot.sql
 
+
 Create grafana datasource and dashboards
 
     docker-compose stop

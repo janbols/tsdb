@@ -30,4 +30,4 @@ SELECT
     random()*100 AS temperature
 FROM generate_series(now() - interval '24 hour', now(), interval '5 minute') AS g1(time), generate_series(1,4,1) AS g2(sensor_id);
 
-SET search_path TO iot, public;
+ALTER DATABASE postgres SET search_path TO public,iot;
