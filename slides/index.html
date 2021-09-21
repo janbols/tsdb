@@ -4,24 +4,26 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Time series DB</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/solarized.css">
+		<link rel="stylesheet" href="dist/theme/moon.css">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>
-					<h1>Timeseries db</h1>
-					<h3>By ...</h3>
-						<ul>
-							<li>christofe.lintermans@actemium.com</li>
+				<section  data-background-image="assets/boks3.jpg" >
+					<h1  style="color: indianred">Timeseries db</h1>
+					<h3  style="color: indianred">By ...</h3>
+						<ul  style="color: indianred">
 							<li>jan.bols@axians.com</li>
+							<li>christofe.lintermans@actemium.com</li>
+							<li>damien.cantinieaux@actemium.com</li>
 						</ul>
 
 				</section>
@@ -33,35 +35,28 @@
 				<section>
 					<h2>Characterstics</h2>
 					<ul>
-						<li>Time-centric</li>
-						<li>Append only</li>
-						<li>Recent</li>
+						<li class="fragment">Time-centric</li>
+						<li class="fragment">Append only</li>
+						<li class="fragment">Recent</li>
 					</ul>
+				</section>
+				<section>
+					<h2>Time series are everywhere</h2>
 				</section>
 				<section>
 					<h2>Examples</h2>
 					<img src="assets/timeseriesdbs.png">
 				</section>
-				<section>
-					<h2>TimescaleDB</h2>
-					<ul>
-						<li>Postgres Extension</li>
-						<li>Hypertables</li>
-						<li>Realtime aggregations</li>
-						<li>Data retention</li>
-					</ul>
+				<section data-background-image="assets/boks1.jpg" data-background-position="top">
+					<h2 style="color: indianred">SQL <=> NoSQL</h2>
 				</section>
 				<section>
-					<h2>Hypertables & Chunks</h2>
-					<img src="assets/hypertable.png">
-				</section>
-				<section>
-					<h2>Hypertables & Chunks</h2>
+					<h2>SQL <=> NoSQL</h2>
+					<div><img src="assets/asesoftware-sql-nosql.png" width="400"></div>
 					<ul>
-						<li>LRU chunk in memory</li>
-						<li>Local indexes</li>
-						<li>Data retention</li>
-						<li>Age based compression (row -> column optimized)</li>
+						<li class="fragment">ACID</li>
+						<li class="fragment">Schema</li>
+						<li class="fragment">Distributed</li>
 					</ul>
 				</section>
 				<section>
@@ -86,26 +81,191 @@
 						9. {name: temperature,  device_id: ghi789,  location_id:  77,  dev_type: roof}
 					</code></pre>
 				</section>
+
 				<section>
-					Influx of data: TODO Damien
+					<h2>TimescaleDD <img src="assets/timescaledb_logo.svg"></h2>
+					<ul>
+						<li class="fragment">Postgres Extension</li>
+						<li class="fragment">Hypertables</li>
+					</ul>
 				</section>
 				<section>
-					Application in industry: TODO Damien
+					<h2>Hypertables & Chunks</h2>
+					<img src="assets/hypertable.png">
+
+					<aside class="notes">
+						time and space partitioning
+					</aside>
+
 				</section>
 				<section>
-					How to query: TODO Damien
+					<h2>Hypertables & Chunks</h2>
+					<pre><code data-trim data-noescape data-line-numbers="1-5|7">
+						CREATE TABLE conditions (
+							time        TIMESTAMPTZ       NOT NULL,
+							location    TEXT              NOT NULL,
+							temperature DOUBLE PRECISION  NULL
+						);
+
+						SELECT create_hypertable('conditions', 'time');
+					  </code></pre>
 				</section>
 				<section>
-					Compare against other NoSQL solutions.
-					Missing features: ACID
-					Need for schema in TimeScaleDB <-> influxDb
+					<h2>Hypertables & Chunks</h2>
+					<ul>
+						<li>LRU chunk in memory</li>
+						<li>Local indexes per chunk</li>
+						<li>Data retention</li>
+					</ul>
+					<aside class="notes">
+						in memory data so fast inserts and queries of recent data
+						Local (<-> global) indexes. Local index in memory
+						Fast delete of chunks with policies
+					</aside>
 				</section>
 				<section>
-					Compare against Historian (osisoft pie)
-					- sharding of data over # servers
-					- getting data out is painful
-					- connectors are supported by industrial technologies
-					- sold together with the full stack of the solution (FE+BE) <-> timescaledb + grafana <-> influxDB + chrono/telegraph
+					<h2>Data retention</h2>
+					<pre class="fragment"><code data-trim data-noescape data-line-numbers="1-5|7-8|10|12">
+						CREATE TABLE conditions(
+							time TIMESTAMPTZ NOT NULL,
+							device INTEGER,
+							temperature FLOAT
+						);
+
+						SELECT * FROM create_hypertable('conditions', 'time',
+							   chunk_time_interval => INTERVAL '1 day');
+
+						SELECT drop_chunks('conditions', INTERVAL '24 hours');
+
+						SELECT add_retention_policy('conditions', INTERVAL '6 months');
+					  </code></pre>
+
+				</section>
+				<section>
+					<h2>Age based compression</h2>
+					<table class="fragment small" ><thead><tr><th>time</th><th>device_id</th><th>cpu</th><th>energy_consumption</th></tr></thead><tbody><tr><td>12:00:02</td><td>1</td><td>88.2</td><td>0.8</td></tr><tr><td>12:00:02</td><td>2</td><td>300.5</td><td>0.9</td></tr><tr><td>12:00:01</td><td>1</td><td>88.6</td><td>0.85</td></tr><tr><td>12:00:01</td><td>2</td><td>299.1</td><td>0.95</td></tr></tbody></table>
+					<div class="fragment small">
+						<div>||</div>
+						<div>\/</div>
+					</div>
+					<table class="fragment small" ><thead><tr><th>time</th><th>device_id</th><th>cpu</th><th>energy_consumption</th></tr></thead><tbody><tr><td>[12:00:02, 12:00:02, 12:00:01, 12:00:1]</td><td>[1, 2, 1, 2]</td><td>[88.2, 300.5, 88.6, 299.1]</td><td>[0.8, 0.9, 0.85, 0.95]</td></tr></tbody></table>
+
+					<pre class="fragment"><code data-trim data-noescape data-line-numbers="1-4|6">
+						ALTER TABLE example SET (
+						  timescaledb.compress,
+						  timescaledb.compress_segmentby = 'device_id'
+						);
+
+						SELECT add_compression_policy('example', INTERVAL '7 days');
+					  </code></pre>
+
+				</section>
+				<section>
+					<h2>Continuous aggregates</h2>
+					<pre class="fragment "><code data-trim data-noescape data-line-numbers="1-6|8|10-14|16-24|26-29|31-34">
+					CREATE TABLE conditions (
+						  time TIMESTAMPTZ NOT NULL,
+						  device INTEGER NOT NULL,
+						  temperature FLOAT NOT NULL,
+						  PRIMARY KEY(time, device)
+					);
+
+					SELECT * FROM create_hypertable('conditions', 'time', 'device', 3);
+
+					INSERT INTO conditions
+					SELECT time, (random()*30)::int, random()*80 - 40
+					FROM generate_series(TIMESTAMP '2020-01-01 00:00:00',
+									 TIMESTAMP '2020-06-01 00:00:00',
+								 INTERVAL '10 min') AS time;
+
+					CREATE MATERIALIZED VIEW conditions_summary_hourly
+					WITH (timescaledb.continuous) AS
+					SELECT device,
+						   time_bucket(INTERVAL '1 hour', time) AS bucket,
+						   AVG(temperature),
+						   MAX(temperature),
+						   MIN(temperature)
+					FROM conditions
+					GROUP BY device, bucket;
+
+					SELECT add_continuous_aggregate_policy('conditions_summary_hourly',
+						start_offset => INTERVAL '1 month',
+						end_offset => INTERVAL '1 h',
+						schedule_interval => INTERVAL '1 h');
+
+					SELECT bucket, avg
+					  FROM conditions_summary_hourly
+					 WHERE device = 1 AND bucket BETWEEN '2020-01-01' AND '2020-03-31'
+					ORDER BY bucket;
+					</code></pre>
+
+
+				</section>
+				<section data-background-image="assets/boks2.jpg" data-background-position="top">
+					<h2  style="color: indianred">Time series DB <=> Historian</h2>
+				</section>
+				<section>
+					<h2>OSISoft Pi <img src="assets/osisoft.jpg" width="100"></h2>
+					<ul>
+						<li>Mixed model: TSDB (tags) + MSSQL (assets)</li>
+						<li>TSDB: flat files per time period</li>
+						<li>Connectors (buffering, 350+ protocols)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>OSISoft Pi: Compression</h2>
+					<ul>
+						<li>Exception filters (deadband)</li>
+						<li>Compression</li>
+					</ul>
+					<div>
+						<img src="assets/osisoftpi-compression.png" >
+
+					</div>
+
+				</section>
+				<section>
+					<h2>OSISoft Pi: get data out </h2>
+					<ul>
+						<li>Excel</li>
+						<li>Ole DB, ODBC, JDBC</li>
+						<li>Rest API</li>
+						<li>Cloud integrations</li>
+						<li>Web app</li>
+					</ul>
+				</section>
+				<section>
+					<h2>OSISoft Pi: get data out </h2>
+					<img src="assets/osisoft_dashboard.jpg">
+				</section>
+				<section>
+					<h2>OSISoft Pi: Extraction</h2>
+					<ul>
+						<li>Raw data</li>
+						<li>resampled data (freq)</li>
+						<li>Calculated data (min, max, avg, stdev, sum)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Wonderware <img src="assets/wonderware.jpg" width="100"></h2>
+					<ul>
+						<li>Integrated SCADA, historian, MES, operational dashboards</li>
+						<li>Properietory TSDB + MSSQL</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Time series DB <=> Historian</h2>
+					<ul>
+						<li>sharding of data over # servers</li>
+						<li>getting data out is painful</li>
+						<li>connectors</li>
+						<li>sold together <-> timescaledb + grafana</li>
+					</ul>
+				</section>
+				<section data-background-image="assets/boks4.jpg" data-background-position="center">
+					<h1  style="color: indianred">DIY</h1>
+					<div ><a href="https://github.com/janbols/tsdb" target="_blank">https://github.com/janbols/tsdb</a></div>
+
 				</section>
 			</div>
 		</div>
