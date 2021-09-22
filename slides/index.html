@@ -84,12 +84,69 @@
 				<section>
 					<h2>InfluxDB <img src="assets/Influxdb_logo.svg"></h2>
 					<ul>
-						<li class="fragment">Popular TSDB</li>						
-						<li class="fragment">2 stacks</li>						
+						<li class="fragment">Popular TSDB <img src="assets/timeseriesdbs - influxdb.png"></li>
+						<li class="fragment">2 stacks</li>
 						<ul>
 							<li class="fragment">TICK stack <= 1.8</li>
-							<li class="fragment">Influx >= 2.0</li>
+							<li class="fragment">InfluxDB OSS >= 2.0</li>
 						</ul>
+					</ul>
+				</section>
+				<section>
+					<h2>TICK stack <= 1.8</h2>
+					<div><img src="assets/TICK-influxdb.jpg" width="500"></div>
+				</section>
+				<section>
+					<h2>InfluxDB OSS 2.0</h2>
+					<ul>
+						<li class="fragment">everything you need in a single binary</li>
+						<li class="fragment">complete rewrite</li>
+					</ul>
+				</section>
+				<section>
+					<ul>
+						<li>Comes with default data model</li>
+						<li class="fragment">3 distinct items</li>
+						<ul>
+							<li class="fragment">Measurement</li>
+							<li class="fragment">Field key</li>
+							<li class="fragment">Tag key</li>
+						</ul>
+					</ul>
+				</section>
+				<section>
+					<ul>
+						<li>1 Measurement</li>
+						<ul>
+							<li class="fragment">Can have 1, n fields</li>
+							<li class="fragment">1 field</li>
+							<ul>
+								<li class="fragment">Can have 0, 1, n tags</li>
+							</ul>
+						</ul>
+					</ul>
+				</section>
+				<section>
+					<h2>Organize well</h2>
+					<div><img src="assets/product_248_19-1_full.png" width="500"></div>
+				</section>				
+				<section>
+					<h2>Prometheus <img src="assets/prometheus-horizontal-color.svg"></h2>
+					<ul>
+						<li class="fragment">Not only TSDB <img src="assets/timeseriesdbs - prometheus.png"></li>
+						<li class="fragment">Collector of metrics (scraping)</li>
+					</ul>
+				</section>
+				<section>
+					<ul>
+						<li>Many systems expose metrics</li>
+						<li class="fragment">READ => Many systems!!!</li>
+						<ul>
+							<li class="fragment">Operating systems (Linux node_exporter, Windows wmi_exporter)</li>
+							<li class="fragment">Micro services (RabbitMQ, InfluxDB, SQL Server)</li>
+						</ul>
+						<li class="fragment">Prometheus scrapes metrics and store in contained TSDB</li>
+						<li class="fragment">User defines alerting rules and alerting end points</li>
 					</ul>
 				</section>
 				<section>
