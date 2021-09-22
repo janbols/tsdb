@@ -1,5 +1,6 @@
 .idea
 venv
 nyc
+weather
 *.iml
 *.gz

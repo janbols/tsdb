@@ -1,11 +1,13 @@
 # Introduction to IoT: New York City Taxicabs
 
+Copied from <https://docs.timescale.com/timescaledb/latest/tutorials/nyc-taxi-cab/> and <https://docs.timescale.com/timescaledb/latest/tutorials/grafana/>
+
 Use case: IoT Analysis and Monitoring
 
 Dataset: [nyc_data.tar.gz](https://timescaledata.blob.core.windows.net/datasets/nyc_data.tar.gz)
 
 ### Prerequisites
-To start, [setup environment](setup).
+To start, [setup environment](../README.md).
 
 ### Background
 
@@ -24,7 +26,7 @@ In this tutorial, you will complete three missions:
 - **Mission 2: Analysis [10 minutes]** You will learn how to analyze a time-series dataset using TimescaleDB and *PostgreSQL*.
 - **Mission 3: Monitoring [10 minutes]** You will learn how to use TimescaleDB to monitor IoT devices. You'll also learn about using TimescaleDB in conjunction with other PostgreSQL extensions like *PostGIS*, for querying geospatial data.
 
-### Mission 1: Gear up (already done)
+### ~~Mission 1: Gear up~~ (already done)
 
 For this tutorial, we will use yellow taxi cab data from the
 [New York City Taxi and Limousine Commission][NYCTLC]
@@ -40,7 +42,7 @@ is time-series data, proper analysis requires a purpose-built
 time-series database. We will use the unique functions
 of TimescaleDB to complete our missions in this tutorial.
 
-#### Download and load data (already done)
+#### ~~Download and load data~~ (already done)
 
 Let's start by downloading the dataset. In the interest of (downloading) time
 and space (on your machine), we'll only grab data for the month of January 2016, a dataset
@@ -81,7 +83,7 @@ You should see something similar to the following output:
 (3 rows)
 ```
 
-#### Define your data schema (already done)
+#### ~~Define your data schema~~ (already done)
 
 As mentioned above, the NYC TLC collects ride-specific data from every
 vehicle in its fleet, generating data from millions of rides every day.
@@ -195,7 +197,7 @@ in the `psql` command line. You should see the following:
 (3 rows)
 ```
 
-#### Load trip data into TimescaleDB (already done)
+#### ~~Load trip data into TimescaleDB~~ (already done)
 
 Next, let's upload the taxi cab data into your TimescaleDB instance.
 The data is in the file called `nyc_data_rides.csv` and we will load it
@@ -261,6 +263,7 @@ tolls_amount          | 0
 improvement_surcharge | 0.3
 total_amount          | 19.3
 ```
+
 
 ### Mission 2: Analysis
 
@@ -628,6 +631,7 @@ The good news is that TimescaleDB is compatible with all other PostgreSQL
 extensions and, for geospatial data, we'll use [PostGIS][postgis]. This allows us
 to slice data by time and location with the speed and scale of TimescaleDB!
 
+##### ~~Install Postgis extension~~ (already Done)
 ```sql
 -- Geospatial queries - TimescaleDB + POSTGIS -- slice by time and location
 -- Install the extension in the database
@@ -646,7 +650,28 @@ You should see the PostGIS extension in your extension list, as noted below:
   timescaledb | 1.6.0   | public     | Enables scalable inserts and complex queries for time-series data
  (3 rows)
  ```
+Now, we need to alter our table to work with PostGIS. To start, we'll add
+geometry columns for ride pick up and drop off locations:
 
+```sql
+-- Create geometry columns for each of our (lat,long) points
+ALTER TABLE rides ADD COLUMN pickup_geom geometry(POINT,2163);
+ALTER TABLE rides ADD COLUMN dropoff_geom geometry(POINT,2163);
+```
+
+Next we'll need to convert the latitude and longitude points into geometry coordinates
+so that it plays well with PostGIS:
+
+>:WARNING: This next query may take several minutes. Updating both columns in one UPDATE statement
+as shown will reduce the amount of time it takes to update all rows in the `rides` table.
+
+```sql
+-- Generate the geometry points and write to table
+UPDATE rides SET pickup_geom = ST_SetSRID(ST_MakePoint(pickup_longitude,pickup_latitude),4326),
+   dropoff_geom = ST_SetSRID(ST_MakePoint(dropoff_longitude,dropoff_latitude),4326);
+```
+
+##### After install Postgis extension
 Lastly, we need one more piece of info: Times Square is located at (`lat`, `long`) (`40.7589`,`-73.9851`).
 
 Now, we have all the information to answer our original question:

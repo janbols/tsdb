@@ -18,9 +18,9 @@
 		<div class="reveal">
 			<div class="slides">
 				<section  data-background-image="assets/boks3.jpg" >
-					<h1  style="color: indianred">Timeseries db</h1>
-					<h3  style="color: indianred">By ...</h3>
-						<ul  style="color: indianred">
+					<h1  style="color: darkred">Timeseries db</h1>
+					<h3  style="color: darkred">By ...</h3>
+						<ul  style="color: darkred">
 							<li>jan.bols@axians.com</li>
 							<li>christofe.lintermans@actemium.com</li>
 							<li>damien.cantinieaux@actemium.com</li>
@@ -29,7 +29,7 @@
 				</section>
 				<section>
 					<h2>What is time-series data?</h2>
-					<blockquote>data that collectively represents how a system, process, or behavior
+					<blockquote class="fragment">data that collectively represents how a system, process, or behavior
 						changes over time.</blockquote>
 				</section>
 				<section>
@@ -48,7 +48,7 @@
 					<img src="assets/timeseriesdbs.png">
 				</section>
 				<section data-background-image="assets/boks1.jpg" data-background-position="top">
-					<h2 style="color: indianred">SQL <=> NoSQL</h2>
+					<h2 style="color: darkred">SQL <=> NoSQL</h2>
 				</section>
 				<section>
 					<h2>SQL <=> NoSQL</h2>
@@ -83,7 +83,7 @@
 				</section>
 
 				<section>
-					<h2>TimescaleDD <img src="assets/timescaledb_logo.svg"></h2>
+					<h2>TimescaleDB <img src="assets/timescaledb_logo.svg"></h2>
 					<ul>
 						<li class="fragment">Postgres Extension</li>
 						<li class="fragment">Hypertables</li>
@@ -100,6 +100,18 @@
 				</section>
 				<section>
 					<h2>Hypertables & Chunks</h2>
+					<ul>
+						<li>LRU chunk in memory</li>
+						<li>Local indexes per chunk</li>
+					</ul>
+					<aside class="notes">
+						in memory data so fast inserts and queries of recent data
+						Local (<-> global) indexes. Local index in memory
+						Fast delete of chunks with policies
+					</aside>
+				</section>
+				<section>
+					<h2>Hypertables & Chunks</h2>
 					<pre><code data-trim data-noescape data-line-numbers="1-5|7">
 						CREATE TABLE conditions (
 							time        TIMESTAMPTZ       NOT NULL,
@@ -109,19 +121,6 @@
 
 						SELECT create_hypertable('conditions', 'time');
 					  </code></pre>
-				</section>
-				<section>
-					<h2>Hypertables & Chunks</h2>
-					<ul>
-						<li>LRU chunk in memory</li>
-						<li>Local indexes per chunk</li>
-						<li>Data retention</li>
-					</ul>
-					<aside class="notes">
-						in memory data so fast inserts and queries of recent data
-						Local (<-> global) indexes. Local index in memory
-						Fast delete of chunks with policies
-					</aside>
 				</section>
 				<section>
 					<h2>Data retention</h2>
@@ -202,7 +201,7 @@
 
 				</section>
 				<section data-background-image="assets/boks2.jpg" data-background-position="top">
-					<h2  style="color: indianred">Time series DB <=> Historian</h2>
+					<h2  style="color: darkred">Time series DB <=> Historian</h2>
 				</section>
 				<section>
 					<h2>OSISoft Pi <img src="assets/osisoft.jpg" width="100"></h2>
@@ -263,7 +262,7 @@
 					</ul>
 				</section>
 				<section data-background-image="assets/boks4.jpg" data-background-position="center">
-					<h1  style="color: indianred">DIY</h1>
+					<h1  style="color: darkred">DIY</h1>
 					<div ><a href="https://github.com/janbols/tsdb" target="_blank">https://github.com/janbols/tsdb</a></div>
 
 				</section>

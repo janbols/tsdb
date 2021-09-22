@@ -1,4 +1,7 @@
 # How to simulate a basic IoT sensor dataset on PostgreSQL or TimescaleDB
+
+Copied from <https://docs.timescale.com/timescaledb/latest/tutorials/simulate-iot-sensor-data/#introduction>
+
 ## Introduction [](introduction)
 The Internet of Things (IoT) describes a trend where computing is
 becoming ubiquitous and is embedded in more and more physical things.
@@ -20,9 +23,10 @@ To complete this tutorial, you will need a cursory knowledge of the Structured Q
 Language (SQL). The tutorial will walk you through each SQL command, but it will be
 helpful if you've seen SQL before.
 
-To start, [setup environment](setup).
+To start, [setup environment](../README.md).
 
-## Step 1 - Set up your tables (already done)[](step1)
+
+## ~~Step 1 - Set up your tables~~ (already done)[](step1)
 First, connect to your database via `psql`.
 
 Second, create the "sensors" and "sensor_data" tables:
@@ -81,7 +85,7 @@ this:
 (4 rows)
 ```
 
-## Step 2 - Create the simulated IoT sensor data (already done)[](step2)
+## ~~Step 2 - Create the simulated IoT sensor data~~ (already done)[](step2)
 
 *Note: for the following sections we'll share the results of our queries
 as an example, but since the tutorial generates random data every time
@@ -228,7 +232,7 @@ documentation:
 
 
 
-[docs-hypertable]: https://docs.timescale.com/api/latest/how-to-guides/hypertables/
-[docs-timebucket]: https://docs.timescale.com/api/latest/hyperfunctions/time_bucket
-[docs-last]: https://docs.timescale.com/api/latest/hyperfunctions/last
-[docs-timescaledb-intro]: https://docs.timescale.com/api/latest/overview
+[docs-hypertable]: https://docs.timescale.com/timescaledb/latest/how-to-guides/hypertables/
+[docs-timebucket]: https://docs.timescale.com/api/latest/hyperfunctions/time_bucket/
+[docs-last]: https://docs.timescale.com/api/latest/hyperfunctions/last/
+[docs-timescaledb-intro]: https://docs.timescale.com/latest/overview/

@@ -11,7 +11,9 @@ services:
       - POSTGRESQL_SHARED_PRELOAD_LIBRARIES=pgaudit,timescaledb
     volumes:
       - tsdb:/bitnami/postgresql
+#      - $PWD/postgresconf/:/opt/bitnami/postgresql/conf/
       - $PWD/nyc/nyc_data:/nyc_data
+      - $PWD/weather:/weather
 
   grafana:
     image: grafana/grafana:8.1.3
