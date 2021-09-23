@@ -3,9 +3,10 @@
 Download data backup data from https://transfer-vinci-energies.netexplorer.pro/fdl/uGHmJIaNIPsofDCkSeo8I7LhfcDRkj and store it in ./backup.
     
     wget https://transfer-vinci-energies.netexplorer.pro/fdl/b4qZSBXZFz6DivVmk4wm2SHRgW1HEF -O backup/grafana.tar.gz
-    wget https://transfer-vinci-energies.netexplorer.pro/fdl/J0ACLfRLqVujNFMoXSq9UB6oEk_hmN -O backup/tsdb.tar.gz
+    wget https://transfer-vinci-energies.netexplorer.pro/dl/ZqnyTjYMKdj_QqZJmoiMIjovQ1zo3F -O backup/tsdb.tar.gz
 
-    sudo chown -R  1001:1001 ./postgresconf
+
+    # sudo chown -R  1001:1001 ./postgresconf
 
     docker-compose run --rm tsdb-restore
     docker-compose run --rm grafana-restore
@@ -50,11 +51,11 @@ in the `psql` command line. You should see the following:
  public | rides         | table | postgres
 (3 rows)
 ```
+## Weather
+Follow steps in [./docs/weather.md](./docs/weather.md)
 ## IoT Sensor data
 Follow steps on [./docs/iot.md](./docs/iot.md)
 ## New York Cab data
 Follow steps in [./docs/nyc.md](./docs/nyc.md)
 ## Grafana
 Follow steps in [./docs/grafana.md](./docs/grafana.md)
-## Weather
-Follow steps in [./docs/grafana.md](https://docs.timescale.com/timescaledb/latest/getting-started/query-data/)
