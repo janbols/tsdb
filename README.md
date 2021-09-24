@@ -1,5 +1,5 @@
 # Slides
-You can view the presentation [in your browser](slides/index.html)
+You can view the presentation by downloading the [slides directory](./slides) and opening the index.html in your browser.
 
 # Getting started
 
