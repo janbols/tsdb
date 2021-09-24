@@ -3,4 +3,4 @@ venv
 nyc
 weather
 *.iml
-*.gz
+tsdb.tar.gz

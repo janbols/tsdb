@@ -1,10 +1,8 @@
 # Getting started
 
-Download data backup data from https://transfer-vinci-energies.netexplorer.pro/fdl/uGHmJIaNIPsofDCkSeo8I7LhfcDRkj and store it in ./backup.
-    
-    wget https://transfer-vinci-energies.netexplorer.pro/fdl/b4qZSBXZFz6DivVmk4wm2SHRgW1HEF -O backup/grafana.tar.gz
-    wget https://transfer-vinci-energies.netexplorer.pro/dl/ZqnyTjYMKdj_QqZJmoiMIjovQ1zo3F -O backup/tsdb.tar.gz
+Get the tsdb.tar.gz from a USB stick or by running the setup as described in [the setup page](./SETUP.md).
 
+Restore the volumes for tsdb and grafana by running the commands below:
 
     # sudo chown -R  1001:1001 ./postgresconf
 
