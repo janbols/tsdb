@@ -1,3 +1,6 @@
+# Slides
+You can view the presentation [in your browser](slides/index.html)
+
 # Getting started
 
 Get the tsdb.tar.gz from a USB stick or by running the setup as described in [the setup page](./SETUP.md).
